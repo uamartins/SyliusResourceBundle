@@ -1,5 +1,5 @@
 {
-    "name": "sylius/resource-bundle",
+    "name": "uamartins/resource-bundle",
     "type": "symfony-bundle",
     "description": "Resource component for Sylius.",
     "keywords": [

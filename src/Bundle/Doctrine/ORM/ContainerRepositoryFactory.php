@@ -16,29 +16,21 @@ namespace Sylius\Bundle\ResourceBundle\Doctrine\ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\RepositoryFactory;
-use Doctrine\Persistence\ObjectRepository;
 
 final class ContainerRepositoryFactory implements RepositoryFactory
 {
-    private RepositoryFactory $doctrineFactory;
-
-    /** @var string[] */
-    private array $genericEntities;
-
-    /** @var ObjectRepository[] */
+    /** @var EntityRepository[] */
     private array $managedRepositories = [];
 
     /**
      * @param string[] $genericEntities
      */
-    public function __construct(RepositoryFactory $doctrineFactory, array $genericEntities)
+    public function __construct(private RepositoryFactory $doctrineFactory, private array $genericEntities)
     {
-        $this->doctrineFactory = $doctrineFactory;
-        $this->genericEntities = $genericEntities;
     }
 
     /** @psalm-suppress InvalidReturnType */
-    public function getRepository(EntityManagerInterface $entityManager, $entityName): ObjectRepository
+    public function getRepository(EntityManagerInterface $entityManager, string $entityName): EntityRepository
     {
         $metadata = $entityManager->getClassMetadata($entityName);
 
@@ -53,7 +45,7 @@ final class ContainerRepositoryFactory implements RepositoryFactory
     private function getOrCreateRepository(
         EntityManagerInterface $entityManager,
         ClassMetadata $metadata,
-    ): ObjectRepository {
+    ): EntityRepository {
         $repositoryHash = $metadata->getName() . spl_object_hash($entityManager);
 
         if (!isset($this->managedRepositories[$repositoryHash])) {
